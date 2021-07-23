@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <div class=".container">
+        <div class="main">
+            <div class="mob1-box">
+                <h1>Analog clock</h1>
+                <div class="mob1">
+                    <div class="clock">
+                        <p>Delhi:</p>
+                        <div class="hour"></div>
+                        <div class="min"></div>
+                        <div class="sec"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mob2-box">
+                <h1>Stopwatch</h1>
+                <div class="mob2">
+                    <div class="border">
+                        <div class="time">
+                            <span id="m">00</span> :
+                            <span id="s">00</span> :
+                            <span id="ms">00</span>
+                        </div>
+                        <br><br>
+                        <button class="start">Start</button>
+                        <button disabled class="stop">Stop</button>
+                        <button class="reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+            <div class="mob3-box">
+                <h1>Timer</h1>
+                <div class="mob3">
+                    <div class="timer">
+                        <span class="alert"></span>
+                        <div class="input">
+                            M:<input type="text" id="tmin" name="minute" size="4" maxlength="2">
+                            S:<input type="text" id="tsec" name="second" size="4" maxlength="2">
+                        </div>
+                        <div class="t-border">
+                            <div class="time2">
+                                <span id="tm">00 :</span>
+                                <span id="tse">00 :</span>
+                                <span id="ts">00</span>
+                            </div>
+                        </div>
+                        <br>
+                        <button class="t-start">start</button>
+                        <button class="t-stop">reset</button>
+                    </div>
+                    <audio controls id="music">
+                        <source src="./timer ringtone/Birthday Countdown.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        //--clock-------------------------------------------------------
+        function clock() {
+            var d = new Date();
+            var t = d.toLocaleString();
+            var sec = d.getSeconds();
+            var min = d.getMinutes();
+            var hour = d.getHours();
+
+            document.querySelector("p").innerHTML = "Delhi : " + t;
+
+            document.querySelector(".sec").style.transform = "rotate(" + (sec * 6 - 90) + "deg)"
+            document.querySelector(".min").style.transform = "rotate(" + (min * 6 - 90) + "deg)"
+            document.querySelector(".hour").style.transform = "rotate(" + (hour * 30 + min / 2 - 90) + "deg)"
+
+
+        }
+        clock();
+        setInterval(clock, 1000);
+        //--stopwatch---------------------------------------------------
+        var timer = 0;
+        var sec = 0;
+        var min = 0;
+        document.querySelector(".start").addEventListener("click", function () {
+
+            this.setAttribute("disabled", "");
+            document.querySelector(".stop").removeAttribute("disabled");
+
+            function increment() {
+                timer++;
+                if (timer < 10) {
+                    timer = "0" + timer;
+                }
+
+                if (timer == 59) {
+                    timer = 0, sec++
+                    if (sec < 10) {
+                        sec = "0" + sec
+                    }
+                };
+
+                if (sec == 59) {
+                    sec = 0, min++
+                    if (min < 10) {
+                        min = "0" + min
+                    }
+                };
+
+
+                document.querySelector("#m").innerHTML = min;
+                document.querySelector("#s").innerHTML = sec;
+                document.querySelector("#ms").innerHTML = timer;
+
+            }
+            var t = setInterval(increment, 10);
+
+            document.querySelector(".stop").addEventListener("click", function () {
+                clearInterval(t);
+                document.querySelector(".start").removeAttribute("disabled");
+                document.querySelector(".stop").setAttribute("disabled", "");
+            });
+            document.querySelector(".reset").addEventListener("click", function () {
+                clearInterval(t);
+                timer = 0 + "0";
+                min = 0 + "0";
+                sec = 0 + "0";
+                document.querySelector("#m").innerHTML = min;
+                document.querySelector("#s").innerHTML = sec;
+                document.querySelector("#ms").innerHTML = timer;
+
+                document.querySelector(".start").removeAttribute("disabled");
+                document.querySelector(".stop").setAttribute("disabled", "");
+            });
+        });
+
+        //--timer---------------------------------------------------------------------
+        function $(x) {
+            return document.querySelector(x)
+        };
+        $(".t-start").addEventListener("click", function () {
+            var ttimer = 1;
+            var tsec = $("#tsec").value;
+            var tmin = $("#tmin").value;
+            var myMusic = document.getElementById("music");
+
+            this.setAttribute("disabled", "");
+            document.querySelector(".t-stop").removeAttribute("disabled");
+
+            function timer() {
+                ttimer--;
+                if (ttimer < 10) {
+                    ttimer = "0" + ttimer;
+                }
+
+                if (ttimer == 0) {
+                    ttimer = 99, tsec--
+                    if (tsec < 10) {
+                        tsec = "0" + tsec
+                    }
+                };
+
+                if (tsec == 0) {
+                    tsec = 59, tmin--
+                    if (tmin < 10) {
+                        tmin = "0" + tmin
+                    }
+                };
+                if (tmin == 0 && tsec == 4) {
+                    myMusic.play();
+                };
+
+                document.querySelector("#tm").innerHTML = tmin + ":";
+                document.querySelector("#tse").innerHTML = tsec + ":";
+                document.querySelector("#ts").innerHTML = ttimer;
+
+                if (tmin == 0 && tsec == 1) {
+                    clearInterval(c)
+                    document.querySelector("#tm").innerHTML = "00 :";
+                    document.querySelector("#tse").innerHTML = "00 :";
+                    document.querySelector("#ts").innerHTML = "00";
+
+                }
+            }
+            var c = setInterval(timer, 10);
+            document.querySelector(".t-stop").addEventListener("click", function () {
+                clearInterval(c);
+                document.querySelector("#tm").innerHTML = "00 :";
+                document.querySelector("#tse").innerHTML = "00 :";
+                document.querySelector("#ts").innerHTML = "00";
+                $("#tsec").value = "";
+                $("#tmin").value = "";
+                myMusic.pause();
+
+                document.querySelector(".t-start").removeAttribute("disabled");
+                document.querySelector(".t-stop").setAttribute("disabled", "");
+            });
+        });
+    </script>
+</body>
+
+</html>
